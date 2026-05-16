@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35913.81
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiverLi.Blog.Infrastructure.Shared", "RiverLi.Blog.Infrastructure.Shared.csproj", "{DB66FF86-19A9-44F8-B089-98C10ED70C02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiverLi.DDD.Core", "..\..\riverli.-ddd.-core\RiverLi.DDD.Core\RiverLi.DDD.Core.csproj", "{5797A387-1067-415A-A13B-39EE7BB51E7D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB66FF86-19A9-44F8-B089-98C10ED70C02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB66FF86-19A9-44F8-B089-98C10ED70C02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB66FF86-19A9-44F8-B089-98C10ED70C02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB66FF86-19A9-44F8-B089-98C10ED70C02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5797A387-1067-415A-A13B-39EE7BB51E7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5797A387-1067-415A-A13B-39EE7BB51E7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5797A387-1067-415A-A13B-39EE7BB51E7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5797A387-1067-415A-A13B-39EE7BB51E7D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A85AB59F-9D9D-4827-A094-BD525C0ABF1B}
+	EndGlobalSection
+EndGlobal
