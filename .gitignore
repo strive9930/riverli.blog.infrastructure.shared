@@ -1,0 +1,75 @@
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio cache/options
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Rider/JetBrains cache/options
+.idea/
+*.sln.iml
+*.prj.user
+
+## MSBuild
+*.cache
+project.assets.json
+project.nuget.cache
+project.packagespec.json
+*.nuget.dgspec.json
+*.nuget.g.props
+*.nuget.g.targets
+rider.project.restore.info
+rider.project.model.nuget.info
+
+## NuGet Packages
+*.nupkg
+*.snupkg
+packages/
+**/packages/*
+!**/packages/build/
+
+## Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+## macOS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+## Linux specific
+*~
+
+## Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+## Coverage
+coverage*.json
+coverage*.xml
+coverage*.info
+
+## Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~

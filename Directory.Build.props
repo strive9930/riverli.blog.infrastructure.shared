@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <!-- 定义共享项目根目录 -->
+    <SolutionRoot>$(MSBuildThisFileDirectory)</SolutionRoot>
+    
+    <!-- 跨平台兼容的项目引用路径 -->
+    <!-- MSBuild 自动处理 Windows (\) 和 macOS (/) 的路径分隔符 -->
+    <DddCorePath>$(SolutionRoot)../riverli.ddd.core/RiverLi.DDD.Core.csproj</DddCorePath>
+    
+    <!-- 如果需要根据操作系统区分路径，可以使用条件判断 -->
+    <!--
+    <DddCorePath Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))'">..iversli.ddd.core\RiverLi.DDD.Core.csproj</DddCorePath>
+    <DddCorePath Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))'">../riverli.ddd.core/RiverLi.DDD.Core.csproj</DddCorePath>
+    <DddCorePath Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">../riverli.ddd.core/RiverLi.DDD.Core.csproj</DddCorePath>
+    -->
+  </PropertyGroup>
+</Project>

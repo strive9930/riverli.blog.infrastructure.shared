@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -70,7 +70,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\riverli.-ddd.-core\RiverLi.DDD.Core\RiverLi.DDD.Core.csproj" />
+    <ProjectReference Include="$(DddCorePath)" />
   </ItemGroup>
 
 </Project>
