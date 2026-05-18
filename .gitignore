@@ -73,3 +73,6 @@ coverage*.info
 *.swp
 *.swo
 *~
+
+**/obj/**
+**/bin/**
