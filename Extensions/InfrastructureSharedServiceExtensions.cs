@@ -1,6 +1,8 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -11,6 +13,7 @@ using RiverLi.Blog.Infrastructure.Shared.Auth;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Formatting.Compact;
+using RiverLi.Blog.Infrastructure.Shared.Exceptions;
 
 namespace RiverLi.Blog.Infrastructure.Shared.Extensions
 {
@@ -28,7 +31,13 @@ namespace RiverLi.Blog.Infrastructure.Shared.Extensions
         {
             var options = new InfrastructureSharedOptions();
             configure?.Invoke(options);
-
+            
+            if (options.EnableGlobalExceptionHandler)
+            {
+                services.AddExceptionHandler<GlobalExceptionHandler>(); // 注册处理器
+                services.AddProblemDetails(); // 注册 ProblemDetails 规范
+            }
+            
             // 添加HttpContextAccessor
             services.AddHttpContextAccessor();
 
@@ -92,6 +101,12 @@ namespace RiverLi.Blog.Infrastructure.Shared.Extensions
             this IApplicationBuilder app, // 注意：这里原来的 app 是 IApplicationBuilder
             Action<InfrastructureSharedOptions>? configure = null)
         {
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | 
+                                   Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+            });
+            
             var options = new InfrastructureSharedOptions();
             configure?.Invoke(options);
 
@@ -104,8 +119,13 @@ namespace RiverLi.Blog.Infrastructure.Shared.Extensions
             // 使用全局异常处理
             if (options.EnableGlobalExceptionHandler)
             {
-                app.UseMiddleware<GlobalExceptionMiddleware>();
+                app.UseExceptionHandler(); // 替换掉之前的 UseMiddleware
             }
+            
+            /*if (options.EnableGlobalExceptionHandler)
+            {
+                app.UseMiddleware<GlobalExceptionMiddleware>();
+            }*/
 
             // 使用CORS
             if (options.EnableCors)
@@ -184,29 +204,65 @@ namespace RiverLi.Blog.Infrastructure.Shared.Extensions
         
         public static IServiceCollection AddLoggingSupport(
             this IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            string serviceName) // 【新增】微服务名称参数
         {
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .Enrich.FromLogContext()
                 .Enrich.WithMachineName()
                 .Enrich.WithEnvironmentName()
-                .Enrich.WithProperty("Application", "RiverLi.Blog")
-                .Enrich.WithProperty("Version", Assembly.GetExecutingAssembly().GetName().Version)
+                .Enrich.WithProperty("Service", serviceName) // 【修改】动态服务名
                 .Enrich.WithThreadId()
                 .WriteTo.Console(new CompactJsonFormatter())
                 .WriteTo.File(
                     new CompactJsonFormatter(),
-                    "logs/log-.json",
+                    $"logs/{serviceName}-log-.json", // 【修改】分应用存储日志文件
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 30,
-                    fileSizeLimitBytes: 100_000_000 // 100MB
+                    fileSizeLimitBytes: 100_000_000
                 )
                 .CreateLogger();
-        
+
             services.AddSerilog();
             return services;
         }
+        
+        public static IEndpointRouteBuilder MapInfrastructureSharedEndpoints(
+            this IEndpointRouteBuilder endpoints, 
+            Action<InfrastructureSharedOptions>? configure = null)
+        {
+            var options = new InfrastructureSharedOptions();
+            configure?.Invoke(options);
+
+            // 1. 暴露健康检查端点 (K8s / 网关 心跳检测专用)
+            endpoints.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                Predicate = _ => true,
+                // 如果想返回详细的 JSON 健康状态（哪个库挂了），可以引入 UIResponseWriter
+                // ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            // 2. 挂载 OpenAPI 和 Scalar (解决您注释里的困惑)
+            if (options.EnableOpenApiDocumentation)
+            {
+                // 这里的强制转换是因为 MapOpenApi 挂载在 IEndpointRouteBuilder 上
+                // 假设外部传入的是 WebApplication app，它实现了 IEndpointRouteBuilder
+                if (endpoints is WebApplication app)
+                {
+                    app.MapOpenApi();
+                    app.MapScalarApiReference(scalarOptions =>
+                    {
+                        scalarOptions.WithTitle(options.ScalarTitle ?? "RiverLi Blog Microservice API")
+                            .WithTheme(ScalarTheme.Moon)
+                            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+                    });
+                }
+            }
+
+            return endpoints;
+        }
+        
     }
 
     /// <summary>
