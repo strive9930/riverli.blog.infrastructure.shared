@@ -14,6 +14,7 @@ using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Formatting.Compact;
 using RiverLi.Blog.Infrastructure.Shared.Exceptions;
+using RiverLi.Blog.Infrastructure.Shared.Security;
 
 namespace RiverLi.Blog.Infrastructure.Shared.Extensions
 {
