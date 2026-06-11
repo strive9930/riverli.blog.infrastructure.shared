@@ -1,4 +1,6 @@
 ﻿// 2. 编写后台上报服务
+
+using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -71,7 +73,8 @@ namespace RiverLi.Blog.Infrastructure.Shared.OpenApi
                         var isPublic = routeEndpoint.Metadata.GetMetadata<IAllowAnonymous>() != null;
                         
                         // 提取接口描述（优先读取 Swagger 的 EndpointDescription，其次降级为 Action 名字）
-                        var description = routeEndpoint.Metadata.GetMetadata<EndpointDescriptionAttribute>()?.Description 
+                        var descAttr = routeEndpoint.Metadata.GetMetadata<DescriptionAttribute>();
+                        var description = descAttr?.Description 
                                           ?? $"{actionDescriptor.ControllerName} - {actionDescriptor.ActionName}";
 
                         foreach (var method in methods)
@@ -88,11 +91,12 @@ namespace RiverLi.Blog.Infrastructure.Shared.OpenApi
                 }
 
                 if (!apiResources.Any()) return;
-
+                // 👇 加入这行防呆设计，去掉末尾可能多余的斜杠
+                var baseUrl = identityUrl.TrimEnd('/');
                 // 🌟 将收割到的本服务全量 API，一发 POST 请求推给 Identity 统一权限中心
                 var client = httpClientFactory.CreateClient();
-                var response = await client.PostAsJsonAsync($"{identityUrl}/api/identity/api-resources/report?serviceName={serviceName}", apiResources);
-
+                var requestUrl = $"{baseUrl}/api/identity/apiresources/report?serviceName={serviceName}";
+                var response = await client.PostAsJsonAsync(requestUrl, apiResources);
                 if (response.IsSuccessStatusCode)
                 {
                     _logger.LogInformation($"[鉴权基建] 成功自动上报 【{serviceName}】微服务共 {apiResources.Count} 个 API 接口至权限中心。");
